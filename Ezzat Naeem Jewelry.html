@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)file:///Users/Abaza/Desktop/Abaza%20Enterprises/CalculatorNew.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="./Gold Price Calculator_files/css2" rel="stylesheet">
+    <title>Gold Price Calculator</title>
+    
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+    }
+
+    h2 {
+        color: #666;
+        margin-top: 30px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    input[readonly] {
+        background-color: #f2f2f2;
+    }
+
+    .karat-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .karat-button {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    .karat-button.selected {
+        background-color: #f2f2f2;
+    }
+    .fee-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .fee-button {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    .fee-button.selected {
+        background-color: #f2f2f2;
+    }
+    </style>
+</head>
+<body>
+    <h1>Gold Calculator</h1>
+    <div class="container">
+        <label for="price-24k">Price 24k (Egp/g):</label>
+        <input type="number" id="price-24k" step="0.01" oninput="calculateCost()">
+        <br>
+        <div class="karat-container">
+            <label for="karat">Karat:</label>
+            <div class="karat-buttons">
+                <div class="karat-button" onclick="selectKarat(18)">18k</div>
+                <div class="karat-button" onclick="selectKarat(21)">21k</div>
+                <div class="karat-button selected" onclick="selectKarat(24)">24k</div>
+            </div>
+            <label for="weight">Weight (g):</label>
+            <input type="number" id="weight" step="0.01" oninput="calculateCost()">
+            <br>
+            <label for="subtotal">Sub Total:</label>
+            <input type="number" id="subtotal" step="0.01" readonly="">
+        </div>
+
+        <div>
+            <label for="fee-type">Manufacturing fees :</label>
+            <div class="fee-buttons">
+                <div class="fee-button selected" onclick="selectFeeType('gram')">EGP</div>
+                <div class="fee-button" onclick="selectFeeType('percentage')">Percentage</div>
+            </div>
+            <br>
+            <label for="fee-per-gram" id="fee-per-gram-label"style="display:none;">EGP/ g:</label>
+            <input type="number" id="fee-per-gram" step="0.01" oninput="calculateCost()" style="display: none;">
+            <label for="fee-percentage" id="fee-percentage-label"style="display: none;"> Weight %:</label>
+            <input type="number" id="fee-percentage" step="0.01" oninput="calculateCost()" style="display: none;">
+            <br>
+            <label for="fee-cost" id="fee-cost-label">Fees (Egp):</label>
+            <input type="number" id="fee-cost" step="0.01" readonly="">
+        </div>
+            <div>
+                <label for="toggle-input">VAT:</label>
+                <input type="checkbox" id="toggle-input" onchange="calculateCost()">
+                <label for="vat-cost" id="vat-cost-label" style="display: none;">VAT (EGP):</label>
+                <input type="number" id="vat-cost" step="0.01" readonly="" style="display: none;">
+                <br>
+            </div>
+            <label for="fee-per-gram" id="fee-per-gram-label" style="display: none;">Fee per gram:</label>
+            <label for="fee-percentage" id="fee-percentage-label" style="display: none;">Fee percentage:</label>
+            <br>
+            </div>
+        <div class="total-cost-container">
+            <h2>Total</h2>
+            <label for="total-cost">Total Cost:</label>
+            <input type="number" id="total-cost" step="0.01" readonly="">
+        </div>
+    </div>
+    
+    <script>
+        var selectedKarat = 21;
+
+        function selectFeeType(type) {
+    var feePerGramInput = document.getElementById('fee-per-gram');
+    var feePercentageInput = document.getElementById('fee-percentage');
+    var feePerGramLabel = document.getElementById('fee-per-gram-label');
+    var feePercentageLabel = document.getElementById('fee-percentage-label');
+
+    if (type === 'gram') {
+        feePerGramInput.style.display = 'block';
+        feePerGramLabel.style.display = 'block';
+        feePercentageInput.style.display = 'none';
+        feePercentageLabel.style.display = 'none';
+    } else if (type === 'percentage') {
+        feePerGramInput.style.display = 'none';
+        feePerGramLabel.style.display = 'none';
+        feePercentageInput.style.display = 'block';
+        feePercentageLabel.style.display = 'block';
+    }
+}
+        function selectKarat(karat) {
+            selectedKarat = karat;
+            updateKaratButtons();
+            calculateCost();
+        }
+
+        function updateKaratButtons() {
+            var karatButtons = document.getElementsByClassName("karat-button");
+            for (var i = 0; i < karatButtons.length; i++) {
+                if (parseInt(karatButtons[i].innerText) === selectedKarat) {
+                    karatButtons[i].classList.add("selected");
+                } else {
+                    karatButtons[i].classList.remove("selected");
+                }
+            }
+        }
+
+        function calculateCost() {
+    // Get the price per gram for the transaction
+    var pricePerGram = parseFloat(document.getElementById("price-24k").value);
+
+    // Get the weight
+    var weight = parseFloat(document.getElementById("weight").value);
+
+    // Calculate the subtotal
+    var subtotal = pricePerGram * weight * (selectedKarat / 24);
+
+    // Get the fee per gram or fee percentage
+    var feePerGram = parseFloat(document.getElementById('fee-per-gram').value);
+    var feePercentage = parseFloat(document.getElementById('fee-percentage').value);
+
+    // Calculate the fees
+    var fees;
+    if (document.getElementById('fee-per-gram').style.display === 'block') {
+        fees = feePerGram * weight;
+    } else if (document.getElementById('fee-percentage').style.display === 'block') {
+        fees = feePercentage / 100 * subtotal;
+    }
+
+    // Get the VAT
+    var vat = 0; 
+    if (document.getElementById('toggle-input').checked) {
+        vat = 6.25 * weight;
+        document.getElementById('vat-cost').style.display = 'block';
+        document.getElementById('vat-cost-label').style.display = 'block';
+    } else {
+        document.getElementById('vat-cost').style.display = 'none';
+        document.getElementById('vat-cost-label').style.display = 'none';
+    }
+    document.getElementById('vat-cost').value = vat.toFixed(2);
+
+    // Calculate the total cost
+    var totalCost = subtotal + fees + vat;
+
+    // Display the subtotal and total cost
+    document.getElementById("subtotal").value = subtotal.toFixed(2);
+    document.getElementById("total-cost").value = totalCost.toFixed(2);
+    document.getElementById("fee-cost").value = fees.toFixed(2);
+
+}
+    </script>
+    </script>
+
+
+</body></html>
