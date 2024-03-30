@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)file:///Users/Abaza/Desktop/Abaza%20Enterprises/CalculatorNew.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="./Gold Price Calculator_files/css2" rel="stylesheet">
+    <title>Gold Price Calculator</title>
+    
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+    }
+
+    h2 {
+        color: #666;
+        margin-top: 30px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    input[readonly] {
+        background-color: #f2f2f2;
+    }
+
+    .karat-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .karat-button {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    .karat-button.selected {
+        background-color: #f2f2f2;
+    }
+    </style>
+</head>
+<body>
+    <h1>Gold Price Calculator</h1>
+    <div class="container">
+        <label for="price-24k">Price 24k (Egp/g):</label>
+        <input type="number" id="price-24k" step="0.01" oninput="calculateCost()">
+        <br>
+        <div class="karat-container">
+            <label for="karat">Karat:</label>
+            <div class="karat-buttons">
+                <div class="karat-button" onclick="selectKarat(18)">18k</div>
+                <div class="karat-button" onclick="selectKarat(21)">21k</div>
+                <div class="karat-button selected" onclick="selectKarat(24)">24k</div>
+            </div>
+            <label for="weight">Weight (g):</label>
+            <input type="number" id="weight" step="0.01" oninput="calculateCost()">
+            <br>
+            <label for="final-cost">Sub Total:</label>
+            <input type="number" id="final-cost" step="0.01" readonly="">
+        </div>
+        <div>
+            <label for="toggle-input">Toggle Input:</label>
+            <input type="checkbox" id="toggle-input" onchange="toggleNumberInput()">
+            <br>
+            <label for="number-input">Number Input:</label>
+            <input type="number" id="number-input" disabled="">
+        </div>
+        <div class="total-cost-container">
+            <h2>Total</h2>
+            <label for="total-cost">Total Cost:</label>
+            <input type="number" id="total-cost" step="0.01" readonly="">
+        </div>
+    </div>
+    
+    <script>
+        var selectedKarat = 21;
+
+        function selectKarat(karat) {
+            selectedKarat = karat;
+            updateKaratButtons();
+            calculateCost();
+        }
+
+        function updateKaratButtons() {
+            var karatButtons = document.getElementsByClassName("karat-button");
+            for (var i = 0; i < karatButtons.length; i++) {
+                if (parseInt(karatButtons[i].innerText) === selectedKarat) {
+                    karatButtons[i].classList.add("selected");
+                } else {
+                    karatButtons[i].classList.remove("selected");
+                }
+            }
+        }
+
+        function calculateCost() {
+            // Get the price per gram for the transaction
+            var pricePerGram = parseFloat(document.getElementById("price-24k").value);
+
+            // Get the weight
+            var weight = parseFloat(document.getElementById("weight").value);
+
+            // Calculate the total cost
+            var totalCost = pricePerGram * weight * (selectedKarat / 24);
+
+            // Display the total cost
+            document.getElementById("final-cost").value = totalCost.toFixed(2);
+        }
+    </script>
+    <script>
+    function toggleNumberInput() {
+        var checkbox = document.getElementById('toggle-input');
+        var numberInput = document.getElementById('number-input');
+        numberInput.disabled = !checkbox.checked;
+    }
+    </script>
+
+
+</body></html>
